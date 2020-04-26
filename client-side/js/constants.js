@@ -8,6 +8,7 @@ module.exports = {
     SOCKET_CHAT_CLIENT_SERVER: "chat-client-to-server",
     SOCKET_CHAT_SERVER_CLIENT: "chat-server-to-client",
     SOCKET_DISCONNECT: "disconnect",
+    SOCKET_START_GAME: "start-game",
 
     SOCKET_CARD_PLAYED: "card-played",
 

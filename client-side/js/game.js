@@ -11,7 +11,7 @@ class Game {
         this.cards = [];
         this.players = [];
         this.lastCard = null;
-        this.turn = false;
+        this.isTurn = false;
     }
 
     static create(socket, canvasElementID) {
@@ -41,6 +41,7 @@ class Game {
         this.playersCards = state.playersCards;
         this.lastCard = state.lastCard;
         this.turn = state.turn;
+        console.log("received game state.");
     }
 
     run() {
@@ -63,7 +64,7 @@ class Game {
 
         this.drawing.drawFrontCards(this.cards);
         this.players.forEach((cards) => this.drawing.drawBackCards(cards));
-        this.drawing.drawDiscardedCard(lastCard);
+        // this.drawing.drawDiscardedCard(lastCard);
     }
 }
 
@@ -72,23 +73,5 @@ const socket = io();
 socket.on("message", function (data) {
     console.log(data);
 });
-/*
-
-let canvas = document.getElementById("canvas");
-canvas.width = 800;
-canvas.height = 600;
-let context = canvas.getContext("2d");
-socket.on("state", function (players) {
-    context.clearRect(0, 0, 800, 600);
-    for (let id in players) {
-        let player = players[id];
-        for (let card in player.cards) {
-            context.beginPath();
-            context.rect(card * CARD_WIDTH, canvas.height - 200, 100, 150);
-            context.stroke();
-        }
-    }
-});
-*/
 
 module.exports = Game;

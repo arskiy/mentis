@@ -7,9 +7,12 @@ const http = require("http");
 const path = require("path");
 const socketIO = require("socket.io");
 
+const Game = require("./server-side/game-server.js");
+
 const app = express();
 const server = http.Server(app);
 const io = socketIO(server);
+let game = Game.create();
 
 app.set("port", PORT);
 app.use("/client-side", express.static(__dirname + "/client-side"));
@@ -20,9 +23,41 @@ app.get("/", function (request, response) {
 });
 
 setInterval(function () {
-    io.sockets.emit("message", "hi!");
-}, 1000);
+    io.sockets.emit("message", "hi");
+}, 2500);
 
+let gameStarted = false;
+
+io.on("connection", (socket) => {
+    socket.on("new-player", (data) => {
+        game.addNewPlayer(data.name, socket);
+        game.sendPlayersNames();
+    });
+
+    socket.on("start-game", () => {
+        console.log("server received start-game...");
+        if (game.startGame()) {
+            gameStarted = true;
+            socket.emit("started-game-ok");
+        } else {
+            socket.emit(
+                "started-game-error",
+                "Para iniciar um jogo, você precisa ter entre 2 e 6 pessoas na partida."
+            );
+        }
+    });
+
+    socket.on("player-action", (data) => {
+        game.getState(socket.id, data);
+        game.sendState();
+    });
+
+    socket.on("disconnect", () => {
+        game.removePlayer(socket.id);
+    });
+});
+
+/*
 var players = {};
 io.on("connection", function (socket) {
     socket.on("new-player", function (socket) {
@@ -31,7 +66,7 @@ io.on("connection", function (socket) {
         };
     });
 
-    /*
+
   socket.on('start game'), function() {
     let player_cards_n = cards_num / player.length;
     for (let player = 0; player < players.length; player++) {
@@ -47,14 +82,11 @@ io.on("connection", function (socket) {
       }
       players[player] = { cards: player_cards };
     }
-  }*/
+  }
 
     socket.on("card-played", function (data) {});
 });
-
-setInterval(function () {
-    io.sockets.emit("state", players);
-}, 1000 / FPS);
+*/
 
 // Starts the server.
 server.listen(PORT, function () {

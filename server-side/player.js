@@ -1,13 +1,15 @@
 class Player {
-    constructor(name, socketID) {
+    constructor(name, socketID, order) {
         this.name = name;
         this.socketID = socketID;
+        this.order = order;
 
         this.cards = [];
+        this.isTurn = false;
     }
 
-    static create(name, socketID) {
-        const player = new Player(name, socketID);
+    static create(name, socketID, order) {
+        const player = new Player(name, socketID, order);
         return player;
     }
 
